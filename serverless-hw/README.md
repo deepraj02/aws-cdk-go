@@ -1,12 +1,9 @@
-# Welcome to your CDK Go project!
+# Serverless Hello World with AWS CDK
+### returns a hello world message
 
-This is a blank project for CDK development with Go.
+## Steps :
+- configure aws-cli and cdk in your environment
+- run `cdk synth` to generate s Cloud Formation Template
+- run `cdk deploy`
+- To delete the deployment run `cdk destroy`
 
-The `cdk.json` file tells the CDK toolkit how to execute your app.
-
-## Useful commands
-
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
- * `go test`         run unit tests
