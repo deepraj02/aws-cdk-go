@@ -1,7 +1,11 @@
 package main
 
 import (
+	"github.com/aws/aws-cdk-go/awscdk/v2/awsapigateway"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awslambda"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awss3assets"
 	"github.com/aws/aws-cdk-go/awscdk/v2"
+
 	// "github.com/aws/aws-cdk-go/awscdk/v2/awssqs"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
@@ -24,6 +28,25 @@ func NewServerlessHwStack(scope constructs.Construct, id string, props *Serverle
 	// queue := awssqs.NewQueue(stack, jsii.String("ServerlessHwQueue"), &awssqs.QueueProps{
 	// 	VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(300)),
 	// })
+
+	/// Define a new lambda function resource
+	helloWorldFunction := awslambda.NewFunction(stack, jsii.String("HelloWorldFunction"), &awslambda.FunctionProps{
+		/// Choosing the Runtime for the Lambda function
+		Runtime: awslambda.Runtime_NODEJS_20_X(),
+		// Points to the lambda directory
+		Code:    awslambda.Code_FromAsset(jsii.String("lambda"), &awss3assets.AssetOptions{}),
+		Handler: jsii.String("hello.handler"),
+	})
+
+	/// Define a API Gateway source
+
+	api := awsapigateway.NewLambdaRestApi(stack, jsii.String("HelloWorldAPI"), &awsapigateway.LambdaRestApiProps{
+		Handler: helloWorldFunction,
+		Proxy:   jsii.Bool(true),
+	})
+	/// Add a '/hello' resource with a GET method
+	helloResource := api.Root().AddResource(jsii.String("hello"), &awsapigateway.ResourceOptions{})
+	helloResource.AddMethod(jsii.String("GET"), awsapigateway.NewLambdaIntegration(helloWorldFunction, &awsapigateway.LambdaIntegrationOptions{}), &awsapigateway.MethodOptions{})
 
 	return stack
 }
